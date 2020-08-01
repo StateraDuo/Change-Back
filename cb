@@ -1,0 +1,108 @@
+#!/bin/bash
+
+i=0
+
+Paste() {
+echo "cd `pwd`" | xclip -selection c
+echo "Pasted to clipboard"
+}
+
+if [ "$1" = "--help" ]
+then
+  echo
+  echo -e "\e[4mChange back Manual:\e[m"
+  echo
+  echo -e "\e[3mSTANDARD:\e[m"
+  echo "	Input amout of directories to go back:"
+  echo "	[cb 3]"
+  echo "	Or input directory name to go back to(Capital sensitive):"
+  echo "	[cb Desktop]"
+  echo "	You can use regular cd by using:"
+  echo "	[cb -d /]"
+  echo
+  echo -e  "\e[3mUNDO:\e[m"
+  echo "	You can undo last cb using: "
+  echo "	[cb -undo]"
+  echo "	You can undo last undo using: "
+  echo "	[cb -undo-undo]"
+  echo
+  echo -e "\e[3mHOME DIRECTORY:\e[m"
+  echo "	You can use cb to set a home directory which you can switch to using: "
+  echo -e "	\e[0;34m[cb -home](to switch)\e[m \e[0;31m[cb --set-home /kali/Desktop](to set home directory)\e[m"
+  echo
+  echo -e "\e[4mCb will paste the cd command with the path to your clipboard, so all you have to do is paste\e[m"
+  echo
+  echo -e "\e[0;33;5m!!!To install dependencies use: [cb -i]!!!\e[m"
+  echo
+  exit
+elif [ "$1" = "-i" ]
+then
+  sudo apt-get install xclip
+  exit
+elif [ "$1" = "-undo" ]
+then
+  touch /usr/local/cbUndoUndo
+  echo `pwd` > /usr/local/cbUndoUndo
+  cd `cat /usr/local/cbLast`
+  Paste
+  exit
+elif [ "$1" = "-d" ]
+then
+  echo `pwd` > /usr/local/cbLast
+  cd "$2"
+  Paste
+  exit
+elif [ "$1" = "--set-home" ]
+then
+  touch /usr/local/cbHomedir
+  echo "$2" > /usr/local/cbHomeDir
+  echo "Home Directory set to `cat /usr/local/cbHomeDir`"
+  exit
+elif [ "$1" = "-home" ]
+then
+  echo `pwd` > /usr/local/cbLast
+  cd `cat /usr/local/cbHomeDir`
+  Paste
+  exit
+elif [ "$1" = "-undo-undo" ]
+then
+  cd `cat /usr/local/cbUndoUndo`
+  Paste
+  exit
+elif [ "$1" = "-setup" ]
+then
+  if [ -z "`cat ~/.bashrc | grep cb=''`" ]
+  then
+    clear
+    echo -n "Installing xclip" && sleep 0.3 && echo -n "." && sleep 0.3 && echo -n "." && sleep 0.3 && echo "." && sleep 0.2
+    sudo apt-get install xclip 1>/dev/null
+    sudo echo "alias cb='`pwd`/cb'" >> ~/.bashrc
+    echo "cb command added, open new terminal to use"
+    exit
+  else
+    cat ~/.bashrc | grep "^alias" -E
+    echo -e "\e[0;31mIs cb already a command?\e[m"
+    exit
+  fi
+fi
+
+if [ -z `echo -n $1 | grep "[0-9]+" -E` ]
+then
+  echo `pwd` > /usr/local/cbLast
+  while [ "`ls | grep $1`" != "$1" ]
+  do
+    cd ..
+  done
+  cd $1
+  Paste
+else
+  echo "`pwd`" > /usr/local/cbLast
+  while(( $i < $1 ))
+  do
+   cd ..
+   i+=1
+  done
+  Paste
+fi
+
+
