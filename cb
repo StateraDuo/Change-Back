@@ -77,7 +77,9 @@ then
     echo -n "Installing xclip" && sleep 0.3 && echo -n "." && sleep 0.3 && echo -n "." && sleep 0.3 && echo "." && sleep 0.2
     sudo apt-get install xclip 1>/dev/null
     sudo echo "alias cb='`pwd`/cb'" >> ~/.bashrc
-    echo "cb command added, open new terminal to use"
+    clear
+    echo -e "\e[0;34mcb command added, open new terminal to use\e[m"
+    sleep 5
     exit
   else
     cat ~/.bashrc | grep "^alias" -E
