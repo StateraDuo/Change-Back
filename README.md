@@ -4,6 +4,7 @@ Change back is a Debian command line tool created as an extension of the cd comm
 ##### *Installation:*
 ```
 git clone https://github.com/StateraDuo/Change-Back
+cd Change-Back
 sudo ./cb -setup
 ```
 ##### *Manual:*
